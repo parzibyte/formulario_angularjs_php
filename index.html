@@ -1,0 +1,64 @@
+<!--
+	
+	Ejemplo de formulario con AJAX, AngularJS y PHP
+	@author parzibyte
+
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<title>Ejemplo de formulario</title>
+
+	<!-- Cargar la librería principal -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+	<!-- Como nuestro script no será muy grande, podemos ponerlo en el HTML -->
+	<script>
+		angular
+		.module("formularios", [])
+		.controller("ControladorPrincipal", ["$scope", "$http", function($scope, $http){
+			$scope.mascota = {};
+
+			$scope.guardar = function(){
+				$http.post("./recibir.php", angular.toJson($scope.mascota))
+				.then(function(respuesta){
+					/*
+						Esto se ejecuta si todo va bien. Podemos leer la respuesta
+						que nos dio el servidor accediendo a la propiedad data
+
+						Recordemos que tenemos que decodificarla, ya que si enviamos con JSON
+						deben respondernos con JSON (no es obligatorio, pero sí es una buena práctica)
+					*/
+					console.log("Petición terminada. La respuesta es: ", angular.fromJson(respuesta.data));
+
+					/*
+						Finalmente "limpiamos" el formulario
+						estableciendo mascota a un objeto vacío
+					*/
+
+					$scope.mascota = {};
+				});
+			};
+		}]);
+	</script>
+</head>
+<body ng-app="formularios">
+	<div ng-controller="ControladorPrincipal">
+		<h2>Nueva mascota</h2>
+		<form>
+			<label for="nombre">Nombre: </label><br>
+			<input ng-model="mascota.nombre" id="nombre" type="text" placeholder="¿Cómo se llama la mascota?">
+			<br><br>
+			<label for="raza">Raza: </label><br>
+			<input ng-model="mascota.raza" id="raza" type="text" placeholder="¿Cuál es su raza?">
+			<br><br>
+			<label for="edad">Edad: </label><br>
+			<input ng-model="mascota.edad" id="edad" type="number" placeholder="¿Cúantos años tiene?">
+			<br><br>
+			<button ng-click="guardar()">Guardar</button><br>
+			<a href="./mascotas.txt" target="_blank">Ver mascotas registradas</a>
+		</form>
+	</div>
+</body>
+</html>
